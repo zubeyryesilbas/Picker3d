@@ -5,7 +5,7 @@ using UnityEngine;
 public class LevelInstance : MonoBehaviour
 {
     [SerializeField] private List<GameObject> _objectsIncluded = new List<GameObject>();
-    public FinishPlatform _finishPlatform;
+    [HideInInspector] public FinishPlatform _finishPlatform;
     private void Awake()
     {
         _finishPlatform = GetComponentInChildren<FinishPlatform>();

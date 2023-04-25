@@ -289,7 +289,10 @@ public class RunnerEditor : EditorWindow
                     GUILayout.EndHorizontal();
                     if(_sceneInstanceLevel != null)
                     if (GUILayout.Button("Delete object or platform selected"))
-                    {    
+                    {   
+                        if(PrefabUtility.IsPartOfAnyPrefab(_sceneInstanceLevel.gameObject))
+                            PrefabUtility.UnpackPrefabInstance(_sceneInstanceLevel.gameObject,PrefabUnpackMode.OutermostRoot ,InteractionMode.UserAction );
+                        
                         DestroyImmediate(currentObject);
                          _sceneInstanceLevel.RemoveObject(currentObject);
                     }
