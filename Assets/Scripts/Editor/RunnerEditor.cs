@@ -31,6 +31,9 @@ public class RunnerEditor : EditorWindow
     private float _selectedObjectXValue;
     private float _posX , _posY , _posZ , _rotX ,_rotY , _rotZ , _zScale;
     private Dictionary<IntegerType , int> _integerDictionary = new Dictionary<IntegerType, int>();
+    private Rect _levelSection;
+    private Rect _objectSection;
+    private Rect _spawnSection;
 
     static Texture2D GetPrefabPreview(string path)
     {
@@ -63,7 +66,9 @@ public class RunnerEditor : EditorWindow
     {   
         if(Application.isPlaying)
             return;
+
         RegisterIndexes();
+        DrawLevelSection();
         if(_editorCamera == null)
         {
             _editorCamera = FindObjectOfType<EditorCamera>();
@@ -132,7 +137,7 @@ public class RunnerEditor : EditorWindow
         {
             SaveLevel();
         }
-         GUILayout.EndHorizontal();
+        GUILayout.EndHorizontal();
         GUILayout.BeginHorizontal();
         GUILayout.Label("Platform Selection", EditorStyles.boldLabel);
         GUILayout.Label("Spawnable Selection", EditorStyles.boldLabel);
@@ -327,31 +332,31 @@ public class RunnerEditor : EditorWindow
         return null;
     }
     private GameObject ShowArrayOfGameObjects(UnityEngine.Object[] objects, IntegerType integerType)
-{    
-    EditorGUILayout.BeginHorizontal();
-    
-    string[] objectNames = new string[objects.Length];
-    for (int i = 0; i < objects.Length; i++)
-    {
-        objectNames[i] = objects[i].name;
+    {    
+        EditorGUILayout.BeginHorizontal();
+        
+        string[] objectNames = new string[objects.Length];
+        for (int i = 0; i < objects.Length; i++)
+        {
+            objectNames[i] = objects[i].name;
+        }
+
+        _integerDictionary[integerType] = EditorGUILayout.Popup(_integerDictionary[integerType], objectNames);
+
+        EditorGUILayout.EndHorizontal();
+
+        if (_integerDictionary[integerType] >= 0 && _integerDictionary[integerType] < objects.Length)
+        {
+            SpawnableObject selectedObject = new SpawnableObject();
+            selectedObject.Name = objects[_integerDictionary[integerType]].name;
+            if(integerType == IntegerType.selectedPlatform)
+                selectedObject.Prefab = (GameObject)objects[_integerDictionary[integerType]];
+            else
+                selectedObject.Prefab = (GameObject)objects[_integerDictionary[integerType]];
+            return selectedObject.Prefab;
+        }
+        return null;
     }
-
-    _integerDictionary[integerType] = EditorGUILayout.Popup(_integerDictionary[integerType], objectNames);
-
-    EditorGUILayout.EndHorizontal();
-
-    if (_integerDictionary[integerType] >= 0 && _integerDictionary[integerType] < objects.Length)
-    {
-        SpawnableObject selectedObject = new SpawnableObject();
-        selectedObject.Name = objects[_integerDictionary[integerType]].name;
-        if(integerType == IntegerType.selectedPlatform)
-            selectedObject.Prefab = (GameObject)objects[_integerDictionary[integerType]];
-        else
-            selectedObject.Prefab = (GameObject)objects[_integerDictionary[integerType]];
-        return selectedObject.Prefab;
-    }
-    return null;
-}
 
     private void ShowPreviewOfPrefab(GameObject prefabObject)
     {
@@ -419,7 +424,13 @@ public class RunnerEditor : EditorWindow
         }
     }
    
-
+    private void DrawLevelSection()
+    {
+        _levelSection.x = 0;
+        _levelSection.y = 0;
+        _levelSection.width = Screen.width;
+        _levelSection.height = 50;
+    }
     private void CreateNewLevel()
     {   
         if(_sceneInstanceLevel != null)
